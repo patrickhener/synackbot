@@ -579,14 +579,14 @@ class Synack:
         for i in range(len(unregistered_slugs)):
             codename = self.getCodenameFromSlug(unregistered_slugs[i])
             if codename == None:
-                log.error("Error registerring "+unregistered_slugs[i]+"!")
+                log.error("Error registering "+unregistered_slugs[i]+"!")
                 self.ignore_slugs.append(unregistered_slugs[i])
                 lpplus = True
             else:
                 log.info("Successfully registered "+str(codename))
-                for i in range (len(jsonResponse)):
-                        if unregistered_slugs[i] == jsonResponse[i]["slug"]:
-                            newly_registered.append(jsonResponse[i])
+                for j in range(len(jsonResponse)):
+                    if jsonResponse[j]["slug"] == unregistered_slugs[i]:
+                        newly_registered.append(jsonResponse[j])
 
         if lpplus:
             log.warning("There is propably a lp+ target which did not register - review manually")

@@ -64,17 +64,14 @@ class Bot():
 	def register_all_and_send(self):
 		newly_registered = self.api.registerAll()
 		if len(newly_registered) > 0:
-			self.api.getAllTargets()
-			for t in newly_registered:
-				for c in self.api.jsonResponse:
-					if t == c['codename']:
-						update_time = datetime.utcfromtimestamp(c['dateUpdated']).strftime("%Y-%m-%d %H:%M:%S")
-						last_submit_time= datetime.utcfromtimestamp(c['lastSubmitted']).strftime("%Y-%m-%d %H:%M:%S")
-						start_time= datetime.utcfromtimestamp(c['start_date']).strftime("%Y-%m-%d %H:%M:%S")
-						end_time= datetime.utcfromtimestamp(c['end_date']).strftime("%Y-%m-%d %H:%M:%S")
-						msg = TARGET_TEMPLATE % (c['category']['name'], c['organization']['name'],c['codename'],str(c['is_updated']),update_time, str(c['is_active'], str(c['is_new']), str(c['averagePayout']), last_submit_time, start_time, end_time))
+			for i in range(len(newly_registered)):
+				update_time = datetime.utcfromtimestamp(newly_registered[i]['dateUpdated']).strftime("%Y-%m-%d %H:%M:%S")
+				last_submit_time= datetime.utcfromtimestamp(newly_registered[i]['lastSubmitted']).strftime("%Y-%m-%d %H:%M:%S")
+				start_time= datetime.utcfromtimestamp(newly_registered[i]['start_date']).strftime("%Y-%m-%d %H:%M:%S")
+				end_time= datetime.utcfromtimestamp(newly_registered[i]['end_date']).strftime("%Y-%m-%d %H:%M:%S")
+				msg = TARGET_TEMPLATE % (newly_registered[i]['category']['name'], newly_registered[i]['organization']['name'],newly_registered[i]['codename'],str(newly_registered[i]['isUpdated']),update_time, str(newly_registered[i]['isActive'], str(newly_registered[i]['isNew']), str(newly_registered[i]['averagePayout']), last_submit_time, start_time, end_time))
 
-						self.notification_send(msg)
+				self.notification_send(msg)
 
 	def claim_and_notify_missions(self):
 		mission_json = self.api.pollMissions()
