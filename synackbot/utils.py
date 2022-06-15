@@ -16,6 +16,8 @@ def send_telegram(key,chat,message):
 
 
 def choose_notification_message(n):
+	msg = None
+
 	if n['subject_type'] == "campaign":
 		msg = f"New mission for target {n['subject']}, check bot output!"
 	elif n['subject_type'] == "published":

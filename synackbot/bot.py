@@ -40,7 +40,6 @@ class Bot():
 
 			if len(nots) > 0:
 				for n in nots:
-					msg = None
 					msg = choose_notification_message(n)
 					if msg:
 						self.notification_send(msg)
