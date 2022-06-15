@@ -564,7 +564,7 @@ class Synack:
             jsonResponse = response.json()
             if (len(jsonResponse)!=0):
                 for i in range (len(jsonResponse)):
-                    if jsonResponse[i]["category"]["name"] in self.assessments & str(jsonResponse[i]["slug"]) not in self.ignore_slugs:
+                    if jsonResponse[i]["category"]["name"] in self.assessments and jsonResponse[i]["slug"] not in self.ignore_slugs:
                         unregistered_slugs.append(str(jsonResponse[i]["slug"]))
                 pageNum += 1
             else:
@@ -584,7 +584,9 @@ class Synack:
                 lpplus = True
             else:
                 log.info("Successfully registered "+str(codename))
-                newly_registered.append(str(codename))
+                for i in range (len(jsonResponse)):
+                        if unregistered_slugs[i] == jsonResponse[i]["slug"]:
+                            newly_registered.append(jsonResponse[i])
 
         if lpplus:
             log.warning("There is propably a lp+ target which did not register - review manually")
