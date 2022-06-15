@@ -40,7 +40,7 @@ authy_secret = Your-Authy-Key
 telegram_key = Your-Telegram-Bot-Api-Key
 telegram_chat = Your-Bot-ChatID
 proxy = False
-proxyport = 8080
+proxy_port = 8080
 ```
 
 The fields are mostly self-explanatory.
