@@ -1,11 +1,16 @@
 import requests
 import urllib.parse
 
+from synackbot.config import PROXY, PROXY_PORT
+
 def send_telegram(key,chat,message):
 		escaped_message = urllib.parse.quote(str(message))
 		send_text = 'https://api.telegram.org/bot' + key + '/sendMessage?chat_id=' + chat + '&text=' + escaped_message
 
-		response = requests.get(send_text, verify=False, proxies={"https": "http://localhost:8080"})
+		if PROXY:
+			response = requests.get(send_text, verify=False, proxies={"https": f"http://127.0.0.1:{PROXY_PORT}"})
+		else:
+			response = requests.get(send_text, verify=False)
 
 		return response
 
