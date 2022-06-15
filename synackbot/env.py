@@ -1,0 +1,1 @@
+synackbot_app = None

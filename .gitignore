@@ -1,0 +1,10 @@
+__pycache__
+.sessiontoken
+.synacktoken
+.notificationtoken
+*.log
+*.out
+venv
+dist
+build
+*.egg-info
