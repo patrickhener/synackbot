@@ -584,9 +584,10 @@ class Synack:
                 lpplus = True
             else:
                 log.info("Successfully registered "+str(codename))
-                for j in range(len(jsonResponse)):
-                    if jsonResponse[j]["slug"] == unregistered_slugs[i]:
-                        newly_registered.append(jsonResponse[j])
+                # for j in range(len(jsonResponse)):
+                #     if jsonResponse[j]["slug"] == unregistered_slugs[i]:
+                #         newly_registered.append(jsonResponse[j])
+                newly_registered.append(x for x in jsonResponse if unregistered_slugs[i] == x["slug"])
 
         if lpplus:
             log.warning("There is propably a lp+ target which did not register - review manually")
