@@ -64,12 +64,12 @@ class Bot():
 	def register_all_and_send(self):
 		newly_registered = self.api.registerAll()
 		if len(newly_registered) > 0:
-			for i in range(len(newly_registered)):
-				update_time = datetime.utcfromtimestamp(newly_registered[i]['dateUpdated']).strftime("%Y-%m-%d %H:%M:%S")
-				last_submit_time= datetime.utcfromtimestamp(newly_registered[i]['lastSubmitted']).strftime("%Y-%m-%d %H:%M:%S")
-				start_time= datetime.utcfromtimestamp(newly_registered[i]['start_date']).strftime("%Y-%m-%d %H:%M:%S")
-				end_time= datetime.utcfromtimestamp(newly_registered[i]['end_date']).strftime("%Y-%m-%d %H:%M:%S")
-				msg = TARGET_TEMPLATE % (newly_registered[i]['category']['name'], newly_registered[i]['organization']['name'],newly_registered[i]['codename'],str(newly_registered[i]['isUpdated']),update_time, str(newly_registered[i]['isActive'], str(newly_registered[i]['isNew']), str(newly_registered[i]['averagePayout']), last_submit_time, start_time, end_time))
+			for i in newly_registered:
+				update_time = datetime.utcfromtimestamp(i['dateUpdated']).strftime("%Y-%m-%d %H:%M:%S")
+				last_submit_time= datetime.utcfromtimestamp(i['lastSubmitted']).strftime("%Y-%m-%d %H:%M:%S")
+				start_time= datetime.utcfromtimestamp(i['start_date']).strftime("%Y-%m-%d %H:%M:%S")
+				end_time= datetime.utcfromtimestamp(i['end_date']).strftime("%Y-%m-%d %H:%M:%S")
+				msg = TARGET_TEMPLATE % (i['category']['name'], i['organization']['name'],i['codename'],i['isUpdated'],update_time, i['isActive'], i['isNew'], i['averagePayout'], last_submit_time, start_time, end_time)
 
 				self.notification_send(msg)
 

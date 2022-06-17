@@ -561,6 +561,8 @@ class Synack:
         while next_page:
             url_slugs = URL_UNREGISTERED_SLUGS + str(pageNum)
             response = self.try_requests("GET", url_slugs, 10)
+            if response.status_code != 200:
+                return []
             jsonResponse = response.json()
             if (len(jsonResponse)!=0):
                 for i in range (len(jsonResponse)):
