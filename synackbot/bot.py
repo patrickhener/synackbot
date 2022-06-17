@@ -65,8 +65,8 @@ class Bot():
 		newly_registered = self.api.registerAll()
 		if newly_registered == -1:
 			self.notification_send("There is propably a lp+ target which did not register - review manually")
-		print(newly_registered)
 		if len(newly_registered) > 0:
+			log.info(f"newly_registered was: {newly_registered}")
 			for i in newly_registered:
 				update_time = datetime.utcfromtimestamp(i['dateUpdated']).strftime("%Y-%m-%d %H:%M:%S")
 				last_submit_time= datetime.utcfromtimestamp(i['lastSubmitted']).strftime("%Y-%m-%d %H:%M:%S")
