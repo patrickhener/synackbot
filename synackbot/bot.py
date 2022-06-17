@@ -65,6 +65,7 @@ class Bot():
 		newly_registered = self.api.registerAll()
 		if newly_registered == -1:
 			self.notification_send("There is propably a lp+ target which did not register - review manually")
+			return
 		if len(newly_registered) > 0:
 			log.info(f"newly_registered was: {newly_registered}")
 			for i in newly_registered:
