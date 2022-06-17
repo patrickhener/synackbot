@@ -593,6 +593,7 @@ class Synack:
 
         if lpplus:
             log.warning("There is propably a lp+ target which did not register - review manually")
+            return -1
 
         return newly_registered
 
