@@ -67,8 +67,10 @@ class Bot():
 			self.notification_send("There is propably a lp+ target which did not register - review manually")
 			return
 		if len(newly_registered) > 0:
-			log.info(f"newly_registered was: {newly_registered}")
+			# log.info(f"newly_registered was: {newly_registered}")
 			for i in newly_registered:
+				# log.info(f"i is: {i}")
+				# log.info(f"type of i is: {type(i)}")
 				update_time = datetime.utcfromtimestamp(i['dateUpdated']).strftime("%Y-%m-%d %H:%M:%S")
 				last_submit_time= datetime.utcfromtimestamp(i['lastSubmitted']).strftime("%Y-%m-%d %H:%M:%S")
 				start_time= datetime.utcfromtimestamp(i['start_date']).strftime("%Y-%m-%d %H:%M:%S")

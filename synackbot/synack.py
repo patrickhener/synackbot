@@ -216,9 +216,13 @@ class Synack:
 ##############################################
     def getAllTargets(self):
         self.jsonResponse.clear()
-        response = self.try_requests("GET", URL_REGISTERED_SUMMARY, 10)
-        self.jsonResponse[:] = response.json()
-        return(response.status_code)
+        try:
+            response = self.try_requests("GET", URL_REGISTERED_SUMMARY, 10)
+            self.jsonResponse[:] = response.json()
+            return(response.status_code)
+        except:
+            return(-1)
+
 
 
 ########################################
@@ -586,10 +590,9 @@ class Synack:
                 lpplus = True
             else:
                 log.info("Successfully registered "+str(codename))
-                # for j in range(len(jsonResponse)):
-                #     if jsonResponse[j]["slug"] == unregistered_slugs[i]:
-                #         newly_registered.append(jsonResponse[j])
-                newly_registered.append(x for x in jsonResponse if unregistered_slugs[i] == x["slug"])
+                for j in range(len(jsonResponse)):
+                    if jsonResponse[j]["slug"] == unregistered_slugs[i]:
+                        newly_registered.append(jsonResponse[j])
 
         if lpplus:
             log.warning("There is propably a lp+ target which did not register - review manually")

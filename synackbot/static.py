@@ -12,10 +12,10 @@ A new target was registered
 Category: %s
 Organization: %s
 Codename: %s
-Updated: %t
+Updated: %r
 Update Date: %s
-Active: %s
-New: %s
+Active: %r
+New: %r
 Average Payout: $ %s
 Last Vuln Submit: %s
 Started: %s
