@@ -31,7 +31,9 @@ class Bot():
 		self.api.getAssessments()
 
 	def notification_send(self, message):
-		send_telegram(self.telegram_key, self.telegram_chat, message)
+		resp = send_telegram(self.telegram_key, self.telegram_chat, message)
+		if resp.status_code != 200:
+			log.warning(f"Notification was not sent successful - {resp.status_code} - {resp.text}")
 
 	def read_and_send_notifications(self):
 		count = self.api.checkUnreadNotificationsCount()
@@ -77,6 +79,7 @@ class Bot():
 				end_time= datetime.utcfromtimestamp(i['end_date']).strftime("%Y-%m-%d %H:%M:%S")
 				msg = TARGET_TEMPLATE % (i['category']['name'], i['organization']['name'],i['codename'],i['isUpdated'],update_time, i['isActive'], i['isNew'], i['averagePayout'], last_submit_time, start_time, end_time)
 
+				log.info(msg)
 				self.notification_send(msg)
 
 	def claim_and_notify_missions(self):
