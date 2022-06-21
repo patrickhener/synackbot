@@ -571,6 +571,7 @@ class Synack:
             if (len(jsonResponse)!=0):
                 for i in range (len(jsonResponse)):
                     if jsonResponse[i]["category"]["name"] in self.assessments and jsonResponse[i]["slug"] not in self.ignore_slugs:
+                        print(f"Adding to unregistered_slugs: {jsonResponse[i]['slug']}")
                         unregistered_slugs.append(str(jsonResponse[i]["slug"]))
                 pageNum += 1
             else:
@@ -579,25 +580,41 @@ class Synack:
         for i in range (len(unregistered_slugs)):
             url_register_slug = "https://platform.synack.com/api/targets/"+unregistered_slugs[i]+"/signup"
             data='{"ResearcherListing":{"terms":1}}'
+            print(f"Processing {url_register_slug}")
             response = self.try_requests("POST", url_register_slug, 10, data)
-            slug = unregistered_slugs[i]
+            print(f"Response status is {response.status_code}")
+            # slug = unregistered_slugs[i]
+        # This will fill self.jsonResponse with current data
         self.getAllTargets()
         for i in range(len(unregistered_slugs)):
+            print(f"Processing slug {unregistered_slugs[i]}")
             codename = self.getCodenameFromSlug(unregistered_slugs[i])
+            print(f"Processing codename {codename}")
             if codename == None:
                 log.error("Error registering "+unregistered_slugs[i]+"!")
                 self.ignore_slugs.append(unregistered_slugs[i])
                 lpplus = True
             else:
                 log.info("Successfully registered "+str(codename))
-                for j in range(len(jsonResponse)):
-                    if jsonResponse[j]["slug"] == unregistered_slugs[i]:
-                        newly_registered.append(jsonResponse[j])
+                # newly_registered.append(unregistered_slugs[i])
+                # print(f"Added {unregistered_slugs[i]} to newly_registered")
+
+        if len(unregistered_slugs) > 0:
+            print("Now processing return values")
+            for i in range(len(unregistered_slugs)):
+                for j in range(len(self.jsonResponse)):
+                    print(f"unregistered slug is {unregistered_slugs[i]}")
+                    print(f"self.jsonResponse[j]['slug'] is {self.jsonResponse[j]['slug']}")
+                    if self.jsonResponse[j]["slug"].lower() == unregistered_slugs[i].lower():
+                        print("Adding to newly registered")
+                        newly_registered.append(self.jsonResponse[j])
 
         if lpplus:
             log.warning("There is propably a lp+ target which did not register - review manually")
             return -1
 
+        if len(newly_registered) > 0:
+            print(f"Going to return newly_registered to bot which content is: {newly_registered}")
         return newly_registered
 
 ###############

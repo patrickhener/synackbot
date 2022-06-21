@@ -69,17 +69,16 @@ class Bot():
 			self.notification_send("There is propably a lp+ target which did not register - review manually")
 			return
 		if len(newly_registered) > 0:
-			# log.info(f"newly_registered was: {newly_registered}")
+			print(f"bot received newly_registered with a length more than 0 and content: {newly_registered}")
 			for i in newly_registered:
-				# log.info(f"i is: {i}")
-				# log.info(f"type of i is: {type(i)}")
+				print(f"now sending message for {i['codename']}")
 				update_time = datetime.utcfromtimestamp(i['dateUpdated']).strftime("%Y-%m-%d %H:%M:%S")
 				last_submit_time= datetime.utcfromtimestamp(i['lastSubmitted']).strftime("%Y-%m-%d %H:%M:%S")
 				start_time= datetime.utcfromtimestamp(i['start_date']).strftime("%Y-%m-%d %H:%M:%S")
 				end_time= datetime.utcfromtimestamp(i['end_date']).strftime("%Y-%m-%d %H:%M:%S")
 				msg = TARGET_TEMPLATE % (i['category']['name'], i['organization']['name'],i['codename'],i['isUpdated'],update_time, i['isActive'], i['isNew'], i['averagePayout'], last_submit_time, start_time, end_time)
 
-				log.info(msg)
+				log.info(f"Message is gonna be: {msg}")
 				self.notification_send(msg)
 
 	def claim_and_notify_missions(self):
