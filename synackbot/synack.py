@@ -571,7 +571,7 @@ class Synack:
             if (len(jsonResponse)!=0):
                 for i in range (len(jsonResponse)):
                     if jsonResponse[i]["category"]["name"] in self.assessments and jsonResponse[i]["slug"] not in self.ignore_slugs:
-                        print(f"Adding to unregistered_slugs: {jsonResponse[i]['slug']}")
+                        log.debug(f"Adding to unregistered_slugs: {jsonResponse[i]['slug']}")
                         unregistered_slugs.append(str(jsonResponse[i]["slug"]))
                 pageNum += 1
             else:
@@ -580,16 +580,16 @@ class Synack:
         for i in range (len(unregistered_slugs)):
             url_register_slug = "https://platform.synack.com/api/targets/"+unregistered_slugs[i]+"/signup"
             data='{"ResearcherListing":{"terms":1}}'
-            print(f"Processing {url_register_slug}")
+            log.debug(f"Processing {url_register_slug}")
             response = self.try_requests("POST", url_register_slug, 10, data)
-            print(f"Response status is {response.status_code}")
+            log.debug(f"Response status is {response.status_code}")
             # slug = unregistered_slugs[i]
-        # This will fill self.jsonResponse with current data
+
         self.getAllTargets()
         for i in range(len(unregistered_slugs)):
-            print(f"Processing slug {unregistered_slugs[i]}")
+            log.debug(f"Processing slug {unregistered_slugs[i]}")
             codename = self.getCodenameFromSlug(unregistered_slugs[i])
-            print(f"Processing codename {codename}")
+            log.debug(f"Processing codename {codename}")
             if codename == None:
                 log.error("Error registering "+unregistered_slugs[i]+"!")
                 self.ignore_slugs.append(unregistered_slugs[i])
@@ -600,21 +600,33 @@ class Synack:
                 # print(f"Added {unregistered_slugs[i]} to newly_registered")
 
         if len(unregistered_slugs) > 0:
-            print("Now processing return values")
+            log.debug("Now saving 'jsonResponse', 'self.jsonResponse', 'unregistered_slugs''' to a file to see what data we actually need to add to newly_registered")
+            with open("jsonResponse.json", mode='wt', encoding='utf-8') as out:
+                json.dump(jsonResponse, out)
+            out.close()
+
+            with open("self.jsonResponse.json", mode='wt', encoding='utf-8') as out:
+                json.dump(self.jsonResponse, out)
+            out.close()
+
+            with open("unregistered_slugs.json", mode='wt', encoding='utf-8') as out:
+                json.dump(unregistered_slugs, out)
+            out.close()
+            log.debug("Now processing return values")
             for i in range(len(unregistered_slugs)):
-                for j in range(len(self.jsonResponse)):
-                    print(f"unregistered slug is {unregistered_slugs[i]}")
-                    print(f"self.jsonResponse[j]['slug'] is {self.jsonResponse[j]['slug']}")
-                    if self.jsonResponse[j]["slug"].lower() == unregistered_slugs[i].lower():
-                        print("Adding to newly registered")
-                        newly_registered.append(self.jsonResponse[j])
+                for j in range(len(jsonResponse)):
+                    log.debug(f"unregistered slug is {unregistered_slugs[i]}")
+                    log.debug(f"self.jsonResponse[j]['slug'] is {jsonResponse[j]['slug']}")
+                    if jsonResponse[j]["slug"].lower() == unregistered_slugs[i].lower():
+                        log.debug("Adding to newly registered")
+                        newly_registered.append(jsonResponse[j])
 
         if lpplus:
             log.warning("There is propably a lp+ target which did not register - review manually")
             return -1
 
         if len(newly_registered) > 0:
-            print(f"Going to return newly_registered to bot which content is: {newly_registered}")
+            log.debug(f"Going to return newly_registered to bot which content is: {newly_registered}")
         return newly_registered
 
 ###############
@@ -813,30 +825,24 @@ class Synack:
 ################
         i = len(sorted_dict.keys())
         claimable_dict = {}
-        # Remove missions which do not fit into limit
-        # TODO check if mission claiming now still works. We sure hope so.
         for key in sorted_dict:
             if missionJson[key]['payout']['amount'] <= limit:
                 log.info(f"Adding {missionJson[key]['title']} for {missionJson[key]['payout']['amount']} $ to claimable list")
                 claimable_dict[key] = sorted_dict[key]
         missionList = []
         for key in claimable_dict.keys():
-            target = self.getCodenameFromSlug(missionJson[key]["listing"]["id"])
             claimable_mission = missionJson[key]
             i-= 1
             campaignID = missionJson[key]["campaign"]["id"]
             orgID = missionJson[key]["organization"]["id"]
             slug = missionJson[key]["listing"]["id"]
             taskID = missionJson[key]["id"]
-            payout = str(missionJson[key]["payout"]["amount"])
             url_claimPath = "https://platform.synack.com/api/tasks/v1/organizations/" + orgID + "/listings/" + slug + "/campaigns/" + campaignID + "/tasks/" + taskID + "/transitions"
             claimResponse = self.try_requests("POST", url_claimPath, 10, claim)
             if claimResponse.status_code == 201:
                 claimed = True
-            elif claimResponse.status_code == 403:
-                log.warning("You tried to claim an lp+ mission from lp - That was not successful")
-                claimed = False
             else:
+                log.warning(f"Claiming failed - status code {claimResponse.status_code}")
                 claimed = False
             missionDict = {
                 "title": claimable_mission['title'],
