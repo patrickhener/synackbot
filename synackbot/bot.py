@@ -87,13 +87,14 @@ class Bot():
 			return
 
 		amount = self.api.getClaimThreshold()
-		log.info(f"We are able to claim a maximum of: {amount: .2f} $ worth missions")
+		# log.info(f"We are able to claim a maximum of: {amount: .2f} $ worth missions")
 
 		claimed_missions = self.api.claimMission(mission_json)
 		if len(claimed_missions) > 0:
 			for m in claimed_missions:
 				if m['claimed']:
 					msg = MISSION_TEMPLATE % (m['title'], m['categories'], m['asset_types'], m['organization'], m['listing'],m['payout'],m['finishing_time'])
+					log.info(msg)
 					self.notification_send(msg)
 
 	def forever_loop(self):
