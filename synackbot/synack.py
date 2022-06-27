@@ -614,12 +614,12 @@ class Synack:
             out.close()
             log.debug("Now processing return values")
             for i in range(len(unregistered_slugs)):
-                for j in range(len(unregistered_response)):
+                for j in unregistered_response:
                     log.debug(f"unregistered slug is {unregistered_slugs[i]}")
-                    log.debug(f"unregisteredResponse[j]['slug'] is {unregistered_response[j]['slug']}")
-                    if unregistered_response[j]["slug"].lower() == unregistered_slugs[i].lower():
+                    log.debug(f"j['slug'] is {j['slug']}")
+                    if j["slug"].lower() == unregistered_slugs[i].lower():
                         log.debug("Adding to newly registered")
-                        newly_registered.append(unregistered_response[j])
+                        newly_registered.append(j)
 
         if lpplus:
             log.warning("There is propably a lp+ target which did not register - review manually")
