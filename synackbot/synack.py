@@ -598,8 +598,6 @@ class Synack:
                 lpplus = True
             else:
                 log.info("Successfully registered "+str(codename))
-                # newly_registered.append(unregistered_slugs[i])
-                # print(f"Added {unregistered_slugs[i]} to newly_registered")
 
         if len(unregistered_slugs) > 0:
             log.debug("Now saving 'unregisteredResponse', 'self.jsonResponse', 'unregistered_slugs''' to a file to see what data we actually need to add to newly_registered")
