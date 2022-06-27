@@ -614,7 +614,7 @@ class Synack:
             out.close()
             log.debug("Now processing return values")
             for i in range(len(unregistered_slugs)):
-                for j in range(len(jsonResponse)):
+                for j in range(len(unregistered_response)):
                     log.debug(f"unregistered slug is {unregistered_slugs[i]}")
                     log.debug(f"unregisteredResponse[j]['slug'] is {unregistered_response[j]['slug']}")
                     if unregistered_response[j]["slug"].lower() == unregistered_slugs[i].lower():
