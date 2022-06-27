@@ -562,6 +562,7 @@ class Synack:
         pageNum = 1
         next_page = True
         unregistered_slugs = []
+        unregistered_response = []
         while next_page:
             url_slugs = URL_UNREGISTERED_SLUGS + str(pageNum)
             response = self.try_requests("GET", url_slugs, 10)
@@ -569,6 +570,7 @@ class Synack:
                 return []
             jsonResponse = response.json()
             if (len(jsonResponse)!=0):
+                unregistered_response.append(jsonResponse)
                 for i in range (len(jsonResponse)):
                     if jsonResponse[i]["category"]["name"] in self.assessments and jsonResponse[i]["slug"] not in self.ignore_slugs:
                         log.debug(f"Adding to unregistered_slugs: {jsonResponse[i]['slug']}")
@@ -600,9 +602,9 @@ class Synack:
                 # print(f"Added {unregistered_slugs[i]} to newly_registered")
 
         if len(unregistered_slugs) > 0:
-            log.debug("Now saving 'jsonResponse', 'self.jsonResponse', 'unregistered_slugs''' to a file to see what data we actually need to add to newly_registered")
-            with open("jsonResponse.json", mode='wt', encoding='utf-8') as out:
-                json.dump(jsonResponse, out)
+            log.debug("Now saving 'unregisteredResponse', 'self.jsonResponse', 'unregistered_slugs''' to a file to see what data we actually need to add to newly_registered")
+            with open("unregisteredResponse.json", mode='wt', encoding='utf-8') as out:
+                json.dump(unregistered_response, out)
             out.close()
 
             with open("self.jsonResponse.json", mode='wt', encoding='utf-8') as out:
@@ -616,10 +618,10 @@ class Synack:
             for i in range(len(unregistered_slugs)):
                 for j in range(len(jsonResponse)):
                     log.debug(f"unregistered slug is {unregistered_slugs[i]}")
-                    log.debug(f"self.jsonResponse[j]['slug'] is {jsonResponse[j]['slug']}")
-                    if jsonResponse[j]["slug"].lower() == unregistered_slugs[i].lower():
+                    log.debug(f"unregisteredResponse[j]['slug'] is {unregistered_response[j]['slug']}")
+                    if unregistered_response[j]["slug"].lower() == unregistered_slugs[i].lower():
                         log.debug("Adding to newly registered")
-                        newly_registered.append(jsonResponse[j])
+                        newly_registered.append(unregistered_response[j])
 
         if lpplus:
             log.warning("There is propably a lp+ target which did not register - review manually")

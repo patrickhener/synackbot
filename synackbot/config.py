@@ -26,6 +26,7 @@ try:
 	POLL_SLEEP = config['DEFAULT'].getint('poll_sleep',10)
 	TELEGRAM_KEY = config['DEFAULT']['telegram_key']
 	TELEGRAM_CHAT = config['DEFAULT']['telegram_chat']
+	CYCLE_TIMEOUT = config['DEFAULT'].getint('cycle_timeout', 300)
 except KeyError as e:
 	log.error(f"Missing key in config: {e}")
 	sys.exit()

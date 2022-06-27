@@ -2,13 +2,13 @@ import time
 import os
 import json
 import signal
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from synackbot.synack import Synack
 from synackbot.utils import choose_notification_message, send_telegram
 from synackbot.logging import log
 from synackbot.static import MESSAGE_TEMPLATE, MISSION_TEMPLATE, TARGET_TEMPLATE
-from synackbot.config import POLL_SLEEP,TELEGRAM_KEY,TELEGRAM_CHAT
+from synackbot.config import POLL_SLEEP,TELEGRAM_KEY,TELEGRAM_CHAT, CYCLE_TIMEOUT
 
 RUN = True
 
@@ -25,6 +25,8 @@ class Bot():
 		self.poll_sleep = POLL_SLEEP
 		self.telegram_key = TELEGRAM_KEY
 		self.telegram_chat = TELEGRAM_CHAT
+		self.last_cycle_time = None
+		self.cycle_timeout = CYCLE_TIMEOUT
 
 	def connect(self):
 		self.api.getSessionToken()
@@ -103,15 +105,29 @@ class Bot():
 		now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 		self.notification_send(f"Bot started at {now}")
 
+
+
 		signal.signal(signal.SIGINT, signal_handler)
 		while True:
 			if not RUN:
 				break
+
 			time.sleep(self.poll_sleep)
-			self.read_and_send_notifications()
-			self.read_and_send_messages()
-			self.register_all_and_send()
 			self.claim_and_notify_missions()
+
+			# Initial registration before timeout for cycle
+			if not self.last_cycle_time:
+				self.read_and_send_notifications()
+				self.read_and_send_messages()
+				self.register_all_and_send()
+				self.last_cycle_time = datetime.now().replace(microsecond=0)
+			else:
+				now = datetime.now().replace(microsecond=0)
+				if self.last_cycle_time < now - datetime.timedelta(minutes=5):
+					self.read_and_send_notifications()
+					self.read_and_send_messages()
+					self.register_all_and_send()
+					self.last_cycle_time = datetime.now().replace(microsecond=0)
 
 		log.info("Bot exited gracefully - bye")
 
