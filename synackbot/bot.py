@@ -123,7 +123,7 @@ class Bot():
 				self.last_cycle_time = datetime.now().replace(microsecond=0)
 			else:
 				now = datetime.now().replace(microsecond=0)
-				if self.last_cycle_time < now - datetime.timedelta(minutes=5):
+				if self.last_cycle_time < now - datetime.timedelta(seconds=self.cycle_timeout):
 					self.read_and_send_notifications()
 					self.read_and_send_messages()
 					self.register_all_and_send()
