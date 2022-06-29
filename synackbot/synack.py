@@ -815,7 +815,6 @@ class Synack:
     def claimMission(self, missionJson):
         dollarValue = {}
         claim = {'type': 'CLAIM'}
-        # limit = self.getClaimThreshold()
 ################
 ## Sort missions by dollar amount high to low
 ################
@@ -826,13 +825,13 @@ class Synack:
 ################
         i = len(sorted_dict.keys())
         claimable_dict = {}
-        # for key in sorted_dict:
-        #     if missionJson[key]['payout']['amount'] <= limit:
-        #         log.info(f"Adding {missionJson[key]['title']} for {missionJson[key]['payout']['amount']} $ to claimable list")
-        #         claimable_dict[key] = sorted_dict[key]
+        for key in sorted_dict:
+            log.debug(f"Adding {missionJson[key]['title']} for {missionJson[key]['payout']['amount']} $ to claimable list")
+            claimable_dict[key] = sorted_dict[key]
         missionList = []
         for key in claimable_dict.keys():
             claimable_mission = missionJson[key]
+            log.debug(f"Claimable Missions are: {claimable_mission}")
             i-= 1
             campaignID = missionJson[key]["campaign"]["id"]
             orgID = missionJson[key]["organization"]["id"]
@@ -845,6 +844,8 @@ class Synack:
             else:
                 log.warning(f"Claiming failed - status code {claimResponse.status_code}")
                 claimed = False
+
+            log.debug(f"Claim response is  {claimResponse.status_code}")
 
             missionDict = {
                 "title": claimable_mission['title'],

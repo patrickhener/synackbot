@@ -88,7 +88,7 @@ class Bot():
 		if len(mission_json) == 0:
 			return
 
-		amount = self.api.getClaimThreshold()
+		# amount = self.api.getClaimThreshold()
 		# log.info(f"We are able to claim a maximum of: {amount: .2f} $ worth missions")
 
 		claimed_missions = self.api.claimMission(mission_json)
