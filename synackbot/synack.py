@@ -655,7 +655,7 @@ class Synack:
         response = self.try_requests("POST", "https://login.synack.com/api/authenticate", 1, data)
         jsonResponse = response.json()
         if not jsonResponse['success']:
-            log.error("Error logging in: "+jsonResponse)
+            log.error("Error logging in: " + jsonResponse['error'])
             return False
         log.info("Login was successfull")
 
