@@ -1,14 +1,13 @@
 import sys
 import logging
-
-import synackbot.env as env
+import os
 
 from logging.handlers import RotatingFileHandler
 
 MAX_BYTES = 10000000 # Maximum size for a log file
 BACKUP_COUNT = 9 # Maximum number of old log files
 
-DEBUG = (env.synackbot_app and env.synackbot_app.args.DEBUG)
+DEBUG = os.environ.get("DEBUG")
 
 if DEBUG:
 	FORMAT = '%(levelname).1s %(asctime)-15s '

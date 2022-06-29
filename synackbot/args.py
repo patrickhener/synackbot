@@ -8,10 +8,6 @@ parser.add_argument(
 	"-v", "--version", action='version', version="Synack API bot v1.0"
 )
 
-parser.add_argument(
-	"-d", "--debug", dest='DEBUG', default=False, action="store_true", help="Activate debug logging"
-)
-
 oneshot_group = parser.add_mutually_exclusive_group()
 
 oneshot_group.add_argument(

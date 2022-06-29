@@ -1,5 +1,4 @@
 import sys
-# import signal
 import traceback
 
 import synackbot.env as env
@@ -7,10 +6,6 @@ from synackbot.args import parse_args
 from synackbot.bot import Bot
 from synackbot.utils import send_telegram
 
-
-# def signal_handler(sig, frame):
-# 	log.info("CTRL-C caught, exiting...")
-# 	sys.exit()
 
 class SynackBotApp(object):
 	def __init__(self):
@@ -53,7 +48,6 @@ class SynackBotApp(object):
 			# signal.signal(signal.SIGINT, signal_handler)
 			try:
 				self.bot.forever_loop()
-				# signal.pause()
 			except KeyboardInterrupt:
 				self.bot.stop_flag = True
 			except BaseException as e:

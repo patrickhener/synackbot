@@ -570,6 +570,7 @@ class Synack:
                 return []
             jsonResponse = response.json()
             if (len(jsonResponse)!=0):
+                jsonResponse[:] = jsonResponse[0]
                 unregistered_response.append(jsonResponse)
                 for i in range (len(jsonResponse)):
                     if jsonResponse[i]["category"]["name"] in self.assessments and jsonResponse[i]["slug"] not in self.ignore_slugs:
@@ -617,9 +618,9 @@ class Synack:
                 for j in len(unregistered_response):
                     log.debug(f"unregistered slug is {unregistered_slugs[i]}")
                     log.debug(f"j['slug'] is {j['slug']}")
-                    if unregistered_response[j][0]["slug"].lower() == unregistered_slugs[i].lower():
+                    if unregistered_response[j]["slug"].lower() == unregistered_slugs[i].lower():
                         log.debug("Adding to newly registered")
-                        newly_registered.append(unregistered_response[j][0])
+                        newly_registered.append(unregistered_response[j])
 
         if lpplus:
             log.warning("There is propably a lp+ target which did not register - review manually")
