@@ -32,6 +32,9 @@ class Bot():
 		self.api.getSessionToken()
 		self.api.getAssessments()
 
+	def clear_cookies(self):
+		self.api.session.cookies.clear()
+
 	def notification_send(self, message):
 		resp = send_telegram(self.telegram_key, self.telegram_chat, message)
 		if resp.status_code != 200:
@@ -71,16 +74,14 @@ class Bot():
 			self.notification_send("There is propably a lp+ target which did not register - review manually")
 			return
 		if len(newly_registered) > 0:
-			print(f"bot received newly_registered with a length more than 0 and content: {newly_registered}")
 			for i in newly_registered:
-				print(f"now sending message for {i['codename']}")
 				update_time = datetime.utcfromtimestamp(i['dateUpdated']).strftime("%Y-%m-%d %H:%M:%S")
 				last_submit_time= datetime.utcfromtimestamp(i['lastSubmitted']).strftime("%Y-%m-%d %H:%M:%S")
 				start_time= datetime.utcfromtimestamp(i['start_date']).strftime("%Y-%m-%d %H:%M:%S")
 				end_time= datetime.utcfromtimestamp(i['end_date']).strftime("%Y-%m-%d %H:%M:%S")
 				msg = TARGET_TEMPLATE % (i['category']['name'], i['organization']['name'],i['codename'],i['isUpdated'],update_time, i['isActive'], i['isNew'], i['averagePayout'], last_submit_time, start_time, end_time)
 
-				log.info(f"Message is gonna be: {msg}")
+				log.info(msg)
 				self.notification_send(msg)
 
 	def claim_and_notify_missions(self):
@@ -104,6 +105,7 @@ class Bot():
 		self.display_or_change_target("optimusdownload")
 		now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 		self.notification_send(f"Bot started at {now}")
+		self.clear_cookies()
 
 
 
@@ -120,6 +122,7 @@ class Bot():
 				self.read_and_send_notifications()
 				self.read_and_send_messages()
 				self.register_all_and_send()
+				self.clear_cookies()
 				self.last_cycle_time = datetime.now().replace(microsecond=0)
 			else:
 				now = datetime.now().replace(microsecond=0)
@@ -127,6 +130,7 @@ class Bot():
 					self.read_and_send_notifications()
 					self.read_and_send_messages()
 					self.register_all_and_send()
+					self.clear_cookies()
 					self.last_cycle_time = datetime.now().replace(microsecond=0)
 
 		log.info("Bot exited gracefully - bye")

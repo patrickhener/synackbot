@@ -570,11 +570,10 @@ class Synack:
                 return []
             jsonResponse = response.json()
             if (len(jsonResponse)!=0):
-                jsonResponse[:] = jsonResponse[0]
                 unregistered_response.append(jsonResponse)
+                unregistered_response[:] = unregistered_response[0]
                 for i in range (len(jsonResponse)):
                     if jsonResponse[i]["category"]["name"] in self.assessments and jsonResponse[i]["slug"] not in self.ignore_slugs:
-                        log.debug(f"Adding to unregistered_slugs: {jsonResponse[i]['slug']}")
                         unregistered_slugs.append(str(jsonResponse[i]["slug"]))
                 pageNum += 1
             else:
@@ -583,16 +582,11 @@ class Synack:
         for i in range (len(unregistered_slugs)):
             url_register_slug = "https://platform.synack.com/api/targets/"+unregistered_slugs[i]+"/signup"
             data='{"ResearcherListing":{"terms":1}}'
-            log.debug(f"Processing {url_register_slug}")
             response = self.try_requests("POST", url_register_slug, 10, data)
-            log.debug(f"Response status is {response.status_code}")
-            # slug = unregistered_slugs[i]
 
         self.getAllTargets()
         for i in range(len(unregistered_slugs)):
-            log.debug(f"Processing slug {unregistered_slugs[i]}")
             codename = self.getCodenameFromSlug(unregistered_slugs[i])
-            log.debug(f"Processing codename {codename}")
             if codename == None:
                 log.error("Error registering "+unregistered_slugs[i]+"!")
                 self.ignore_slugs.append(unregistered_slugs[i])
@@ -601,33 +595,15 @@ class Synack:
                 log.info("Successfully registered "+str(codename))
 
         if len(unregistered_slugs) > 0:
-            log.debug("Now saving 'unregisteredResponse', 'self.jsonResponse', 'unregistered_slugs''' to a file to see what data we actually need to add to newly_registered")
-            with open("unregisteredResponse.json", mode='wt', encoding='utf-8') as out:
-                json.dump(unregistered_response, out)
-            out.close()
-
-            with open("self.jsonResponse.json", mode='wt', encoding='utf-8') as out:
-                json.dump(self.jsonResponse, out)
-            out.close()
-
-            with open("unregistered_slugs.json", mode='wt', encoding='utf-8') as out:
-                json.dump(unregistered_slugs, out)
-            out.close()
-            log.debug("Now processing return values")
             for i in range(len(unregistered_slugs)):
-                for j in len(unregistered_response):
-                    log.debug(f"unregistered slug is {unregistered_slugs[i]}")
-                    log.debug(f"j['slug'] is {j['slug']}")
+                for j in range(len(unregistered_response)):
                     if unregistered_response[j]["slug"].lower() == unregistered_slugs[i].lower():
-                        log.debug("Adding to newly registered")
                         newly_registered.append(unregistered_response[j])
 
         if lpplus:
             log.warning("There is propably a lp+ target which did not register - review manually")
             return -1
 
-        if len(newly_registered) > 0:
-            log.debug(f"Going to return newly_registered to bot which content is: {newly_registered}")
         return newly_registered
 
 ###############
