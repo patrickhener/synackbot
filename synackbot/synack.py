@@ -568,7 +568,10 @@ class Synack:
             response = self.try_requests("GET", url_slugs, 10)
             if response.status_code != 200:
                 return []
-            jsonResponse = response.json()
+            try:
+                jsonResponse = response.json()
+            except:
+                return newly_registered
             if (len(jsonResponse)!=0):
                 unregistered_response.append(jsonResponse)
                 unregistered_response[:] = unregistered_response[0]
