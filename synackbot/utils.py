@@ -31,7 +31,7 @@ def choose_notification_message(n,balance=None):
 			msg = f"The vulnerability for {n['subject']} was accepted"
 			# Also add the current balance
 			if balance:
-				msg += {f"\nThe overall balance is now {balance}"}
+				msg += {f"\nThe overall balance is now ${balance}"}
 		elif n['action'] == "rejected":
 			msg = f"Vulnerability '{n['subject']}' was rejected - Reason: {n['meta']['detailed_description']}"
 		elif n['action'] == "edit":
@@ -49,7 +49,7 @@ def choose_notification_message(n,balance=None):
 			msg = f"The mission submission for {n['subject']} was accepted"
 			# Also add the current balance
 			if balance:
-				msg += {f"\nThe overall balance is now {balance}"}
+				msg += {f"\nThe overall balance is now ${balance}"}
 		elif n['action'] == "rejected":
 			msg = f"Mission submission on '{n['subject']}' was rejected"
 		elif n['action'] == "edit":
