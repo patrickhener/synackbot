@@ -1068,3 +1068,5 @@ class Synack:
 
         print("")
         print(tabulate(data, headers=table_headers))
+
+        return balance

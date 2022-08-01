@@ -47,7 +47,8 @@ class Bot():
 
 			if len(nots) > 0:
 				for n in nots:
-					msg = choose_notification_message(n)
+					balance = self.api.getTransactions()
+					msg = choose_notification_message(n, balance)
 					if msg:
 						self.notification_send(msg)
 
