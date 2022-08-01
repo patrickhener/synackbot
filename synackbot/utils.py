@@ -33,6 +33,8 @@ def choose_notification_message(n):
 			msg = f"Vulnerability '{n['subject']}' was rejected - Reason: {n['meta']['detailed_description']}"
 		elif n['action'] == "edit":
 			msg = f"Vulnerability '{n['subject']}' needs edits"
+		elif n['action'] == "revoked":
+			msg = f"Vulnerability '{n['subject']}' was revoked"
 		else:
 			msg = f"There was an unknown action type '{n['action']}' when trying to poll Notifications for a submission. See also bot.log."
 	elif n['subject_type'] == "task":
@@ -46,6 +48,8 @@ def choose_notification_message(n):
 			msg = f"Mission submission on '{n['subject']}' was rejected"
 		elif n['action'] == "edit":
 			msg = f"Mission submission on '{n['subject']}' needs edits"
+		elif n['action'] == "revoked":
+			msg = f"Mission on '{n['subject']}' was revoked"
 		else:
 			msg = f"There was an unknown action type '{n['action']}' when trying to poll Notifications for missions. See also bot.log."
 
