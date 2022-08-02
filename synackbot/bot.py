@@ -47,9 +47,11 @@ class Bot():
 
 			if len(nots) > 0:
 				for n in nots:
-					balance = self.api.getTransactions()
-					msg = choose_notification_message(n, balance)
+					msg = choose_notification_message(n)
 					if msg:
+						if n['action'] == "accepted":
+							# Get balance add to msg
+							pass
 						self.notification_send(msg)
 
 				self.api.markNotificationsRead()
@@ -90,9 +92,6 @@ class Bot():
 		if len(mission_json) == 0:
 			return
 
-		# amount = self.api.getClaimThreshold()
-		# log.info(f"We are able to claim a maximum of: {amount: .2f} $ worth missions")
-
 		claimed_missions = self.api.claimMission(mission_json)
 		if len(claimed_missions) > 0:
 			for m in claimed_missions:
@@ -103,6 +102,8 @@ class Bot():
 
 	def forever_loop(self):
 		log.info("Starting the bot loop")
+		self.display_or_change_target("optimusdownload2")
+		time.sleep(5)
 		self.display_or_change_target("optimusdownload")
 		now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 		self.notification_send(f"Bot started at {now}")

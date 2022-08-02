@@ -15,7 +15,7 @@ def send_telegram(key,chat,message):
 		return response
 
 
-def choose_notification_message(n,balance=None):
+def choose_notification_message(n):
 	msg = None
 
 	if n['subject_type'] == "campaign":
@@ -29,9 +29,6 @@ def choose_notification_message(n,balance=None):
 			msg = f"There is a new message regarding vulnerability {n['subject']}"
 		elif n['action'] == "accepted":
 			msg = f"The vulnerability for {n['subject']} was accepted"
-			# Also add the current balance
-			if balance:
-				msg += {f"\nThe overall balance is now ${balance}"}
 		elif n['action'] == "rejected":
 			msg = f"Vulnerability '{n['subject']}' was rejected - Reason: {n['meta']['detailed_description']}"
 		elif n['action'] == "edit":
@@ -47,9 +44,6 @@ def choose_notification_message(n,balance=None):
 			msg = f"There is a new message regarding mission {n['subject']}"
 		elif n['action'] == "accepted":
 			msg = f"The mission submission for {n['subject']} was accepted"
-			# Also add the current balance
-			if balance:
-				msg += {f"\nThe overall balance is now ${balance}"}
 		elif n['action'] == "rejected":
 			msg = f"Mission submission on '{n['subject']}' was rejected"
 		elif n['action'] == "edit":
