@@ -3,6 +3,7 @@ import os
 import json
 import signal
 from datetime import datetime, timedelta
+from tabulate import tabulate
 
 from synackbot.synack import Synack
 from synackbot.utils import choose_notification_message, send_telegram
@@ -51,7 +52,8 @@ class Bot():
 					if msg:
 						if n['action'] == "accepted":
 							# Get balance add to msg
-							pass
+							numbers = self.api.getTransactions()
+							msg += f"\nThe overall balance is now {numbers['balance']}"
 						self.notification_send(msg)
 
 				self.api.markNotificationsRead()
@@ -290,4 +292,20 @@ class Bot():
 			return
 
 	def display_transactions(self):
-		self.api.getTransactions()
+		numbers = self.api.getTransactions()
+
+		table_headers = ["Reference Type", "Amount"]
+		data = [
+		["Missions", f"$ {numbers['mission_sum']}"],
+		["Patch Verifications", f"$ {numbers['patch_sum']}"],
+		["Vulnerabilities", f"$ {numbers['vuln_sum']}"],
+		["",""],
+		["Total Earned", f"$ {numbers['overall_sum']}"],
+		["Cashed Out", f"$ {numbers['cash_out_sum']}"],
+		["",""],
+		["Balance", f"$ {numbers['balance']}"],
+		]
+
+		print("")
+		print(tabulate(data, headers=table_headers))
+

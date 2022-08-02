@@ -7,8 +7,6 @@ import datetime
 import time
 import pyotp
 
-from tabulate import tabulate
-
 from urllib.parse import urlparse
 from netaddr import IPNetwork
 from pathlib import Path
@@ -1054,19 +1052,12 @@ class Synack:
 
         balance = overall_sum - cash_out_sum
 
-        table_headers = ["Reference Type", "Amount"]
-        data = [
-            ["Missions", f"$ {mission_sum}"],
-            ["Patch Verifications", f"$ {patch_sum}"],
-            ["Vulnerabilities", f"$ {vuln_sum}"],
-            ["",""],
-            ["Total Earned", f"$ {overall_sum}"],
-            ["Cashed Out", f"$ {cash_out_sum}"],
-            ["",""],
-            ["Balance", f"$ {balance}"],
-        ]
 
-        print("")
-        print(tabulate(data, headers=table_headers))
-
-        return balance
+        return {
+            "mission_sum": mission_sum,
+            "patch_sum": patch_sum,
+            "vuln_sum": vuln_sum,
+            "overall_sum": overall_sum,
+            "cash_out_sum": cash_out_sum,
+            "balance": balance
+        }
