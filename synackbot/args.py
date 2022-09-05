@@ -1,12 +1,14 @@
 import argparse
+from synackbot._version import __version__
 
 parser = argparse.ArgumentParser(
 	description="Synack API request and bot implementation"
 )
 
 parser.add_argument(
-	"-v", "--version", action='version', version="Synack API bot v1.0"
+	"-v", "--version", action='version', version=f"Synack API bot v{__version__}"
 )
+
 
 oneshot_group = parser.add_mutually_exclusive_group()
 
@@ -21,6 +23,11 @@ oneshot_group.add_argument(
 oneshot_group.add_argument(
 	"-s", "--scope", dest="SCOPE", default=False, action="store_true", help="Download scope (combined with 'codename')"
 )
+
+parser.add_argument(
+	"-A", "--all", dest="ALL", default=False, action="store_true", help="Download all scopes (combined with 'scope')"
+)
+
 
 oneshot_group.add_argument(
 "-t", "--target", dest="TARGET", default=False, action="store_true", help="Reads current target or sets it when combined with 'codename'"

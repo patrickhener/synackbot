@@ -174,109 +174,130 @@ class Bot():
 
 			log.info(f"Analytics successfully downloaded to {codename}_analytics.out")
 
-	def download_scope(self, codename):
-		if not codename:
-			log.error("No codename was provided")
+	def download_single_scope(self, codename):
+		self.api.getAllTargets()
+		# First find category of target
+		category = None
+
+		slug = self.api.getTargetID(codename)
+		if slug == "":
+			log.error("Codename was not found")
 			return
-		else:
-			self.api.getAllTargets()
-			# First find category of target
-			category = None
 
-			slug = self.api.getTargetID(codename)
-			if slug == "":
-				log.error("Codename was not found")
-				return
+		for t in self.api.jsonResponse:
+			if t['id'] == slug:
+				category = t['category']['name']
 
-			for t in self.api.jsonResponse:
-				if t['id'] == slug:
-					category = t['category']['name']
+		if not category:
+			log.error("Category was not found")
+			return
 
-			if not category:
-				log.error("Category was not found")
-				return
+		if category == "Host":
+			cidrs = self.api.getScope(codename)
+			ips = self.api.getIPs(cidrs)
+			targetPath = "./"+codename.upper()+"/"
+			if os.path.isdir(targetPath) == False:
+				os.mkdir(targetPath)
+			filePath = "./"+codename.upper()+"/scope.txt"
+			if os.path.exists(filePath):
+				os.remove(filePath)
+			with open('./'+codename.upper()+'/scope.txt', mode='wt', encoding='utf-8') as myfile:
+				myfile.write('\n'.join(ips))
+				myfile.write('\n')
 
-			if category == "Host":
-				cidrs = self.api.getScope(codename)
-				ips = self.api.getIPs(cidrs)
-				targetPath = "./"+codename.upper()+"/"
-				if os.path.isdir(targetPath) == False:
-					os.mkdir(targetPath)
-				filePath = "./"+codename.upper()+"/scope.txt"
-				if os.path.exists(filePath):
-					os.remove(filePath)
-				with open('./'+codename.upper()+'/scope.txt', mode='wt', encoding='utf-8') as myfile:
-					myfile.write('\n'.join(ips))
-					myfile.write('\n')
+		if category == "Web Application":
+			tupleList = set()
+			oosTupleList = set()
+			burpSet = set()
+			oosBurpSet = set()
+			scope,oos = self.api.getScope(codename)
 
-			if category == "Web Application":
-				tupleList = set()
-				oosTupleList = set()
-				burpSet = set()
-				oosBurpSet = set()
-				scope,oos = self.api.getScope(codename)
+			wildcardRegex = "(.*\.|)"
 
-				wildcardRegex = "(.*\.|)"
+			for j in range(len(scope)):
+				netloc = scope[j]['netloc']
+				path = scope[j]['netloc']
+				wildcard = scope[j]['wildcard']
+				path = scope[j]['path']
+				netloc = netloc+path
+				log.debug(netloc)
+				if wildcard == True:
+					tupleList.add(netloc)
+					burpStr = netloc.replace('.','\.')
+					burpStr = burpStr.replace('/','\/')
+					burpSet.add(wildcardRegex + burpStr)
+				else:
+					tupleList.add(netloc)
+					burpStr = netloc.replace('.','\.')
+					burpStr = burpStr.replace('/','\/')
+					burpSet.add(burpStr)
 
-				for j in range(len(scope)):
-					netloc = scope[j]['netloc']
-					path = scope[j]['netloc']
-					wildcard = scope[j]['wildcard']
-					path = scope[j]['path']
-					netloc = netloc+path
-					log.debug(netloc)
-					if wildcard == True:
-						tupleList.add(netloc)
-						burpStr = netloc.replace('.','\.')
-						burpStr = burpStr.replace('/','\/')
-						burpSet.add(wildcardRegex + burpStr)
-					else:
-						tupleList.add(netloc)
-						burpStr = netloc.replace('.','\.')
-						burpStr = burpStr.replace('/','\/')
-						burpSet.add(burpStr)
-
-				for k in range(len(oos)):
-					netloc = oos[k]['netloc']
-					path = oos[k]['netloc']
-					wildcard = oos[k]['wildcard']
-					path = oos[k]['path']
-					netloc = netloc + path
+			for k in range(len(oos)):
+				netloc = oos[k]['netloc']
+				path = oos[k]['netloc']
+				wildcard = oos[k]['wildcard']
+				path = oos[k]['path']
+				netloc = netloc + path
+				oosTupleList.add(netloc)
+				if wildcard == True:
 					oosTupleList.add(netloc)
-					if wildcard == True:
-						oosTupleList.add(netloc)
-						oosBurpStr = netloc.replace('.','\.')
-						oosBurpStr = oosBurpStr.replace('/','\/')
-						oosBurpSet.add(wildcardRegex + oosBurpStr)
-					else:
-						oosBurpStr = netloc.replace('.','\.')
-						oosBurpStr = oosBurpStr.replace('/','\/')
-						oosTupleList.add(netloc)
-						oosBurpSet.add(netloc.replace('.','\.'))
+					oosBurpStr = netloc.replace('.','\.')
+					oosBurpStr = oosBurpStr.replace('/','\/')
+					oosBurpSet.add(wildcardRegex + oosBurpStr)
+				else:
+					oosBurpStr = netloc.replace('.','\.')
+					oosBurpStr = oosBurpStr.replace('/','\/')
+					oosTupleList.add(netloc)
+					oosBurpSet.add(netloc.replace('.','\.'))
 
-				scopeList = list(tupleList)
-				burpList = list(burpSet)
-				oosBurpList = list(oosBurpSet)
-				targetPath = "./"+codename.upper()+"/"
-				if os.path.isdir(targetPath) == False:
-					os.mkdir(targetPath)
-				filePath = "./"+codename.upper()+"/scope.txt"
-				if os.path.exists(filePath):
-					os.remove(filePath)
+			scopeList = list(tupleList)
+			burpList = list(burpSet)
+			oosBurpList = list(oosBurpSet)
+			targetPath = "./"+codename.upper()+"/"
+			if os.path.isdir(targetPath) == False:
+				os.mkdir(targetPath)
+			filePath = "./"+codename.upper()+"/scope.txt"
+			if os.path.exists(filePath):
+				os.remove(filePath)
 
-				with open('./'+codename.upper()+'/scope.txt', mode='wt', encoding='utf-8') as myfile:
-					myfile.write('\n'.join(scopeList))
-					myfile.write('\n')
+			with open('./'+codename.upper()+'/scope.txt', mode='wt', encoding='utf-8') as myfile:
+				myfile.write('\n'.join(scopeList))
+				myfile.write('\n')
 
-				with open('./'+codename.upper()+'/burpScope.txt', mode='wt', encoding='utf-8') as myfile:
-					myfile.write('\n'.join(burpList))
-					myfile.write('\n')
+			with open('./'+codename.upper()+'/burpScope.txt', mode='wt', encoding='utf-8') as myfile:
+				myfile.write('\n'.join(burpList))
+				myfile.write('\n')
 
-				with open('./'+codename.upper()+'/burpOOS.txt', mode='wt', encoding='utf-8') as myfile:
-					myfile.write('\n'.join(oosBurpList))
-					myfile.write('\n')
+			with open('./'+codename.upper()+'/burpOOS.txt', mode='wt', encoding='utf-8') as myfile:
+				myfile.write('\n'.join(oosBurpList))
+				myfile.write('\n')
 
-			log.info(f"Scope successfully written to folder {codename.upper()}")
+		log.info(f"Scope successfully written to folder {codename.upper()}")
+
+	def download_all_scope(self):
+		self.api.getAllTargets()
+
+		web_targets = self.api.getCodenames("web")
+		host_targets = self.api.getCodenames("host")
+
+		# Download web scopes
+		for i in range(len(web_targets)):
+			self.download_single_scope(web_targets[i])
+
+		# Download host scopes
+		for i in range(len(host_targets)):
+			self.download_single_scope(host_targets[i])
+
+
+	def download_scope(self, codename, all):
+		if all:
+			self.download_all_scope()
+		else:
+			if not codename:
+				log.error("No codename was provided")
+				return
+			else:
+				self.download_single_scope(codename)
 
 	def display_or_change_target(self, codename):
 		self.api.getAllTargets()

@@ -33,7 +33,10 @@ class SynackBotApp(object):
 			sys.exit()
 		elif self.args.SCOPE:
 			log.info("One-Shot action detected - executing")
-			self.bot.download_scope(self.args.CODENAME)
+			if self.args.ALL:
+				self.bot.download_scope("", True)
+			else:
+				self.bot.download_scope(self.args.CODENAME, False)
 			sys.exit()
 		elif self.args.TARGET:
 			log.info("One-Shot action detected - executing")
