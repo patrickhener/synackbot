@@ -1050,7 +1050,7 @@ class Synack:
                 elif reference_type == "Vulnerability":
                     vuln_sum += f_amount
 
-        balance = overall_sum - cash_out_sum
+        balance = overall_sum + cash_out_sum
 
 
         return {
