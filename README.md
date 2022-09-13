@@ -122,8 +122,7 @@ If you just call it without any arguments it will start the forever loop and do 
   - if there are any notifications regarding missions or vulnerabilities it will send you a notification
   - Then it will mark all notifications as read
 - Check for new messages (conversation)
-  - if there are any new ones it will send you a notification
-  - TODO: Yet need to figure how to mark the messages as "read"
+  - if there are any new ones it will send you a notification and mark it as read
 - Register all not yet registered targets
   - if any new were registered you will get a notification with quite a detail on the newly registered target
 - Poll for new missions

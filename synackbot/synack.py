@@ -1,3 +1,4 @@
+from urllib import response
 import requests
 import re
 import json
@@ -975,6 +976,16 @@ class Synack:
                 pageIterator+=1
 
         return(messages)
+
+
+    def markMessageRead(self, id):
+        url = f"https://platform.synack.com/api/vulnerabilities/{id}/conversations"
+        self.webheaders['Authorization'] = f"Bearer {self.token}"
+        res = self.try_requests("GET", url, 10)
+        if res.status_code != 200:
+            return False
+        else:
+            return True
 
 
 #############################

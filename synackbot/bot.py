@@ -69,9 +69,15 @@ class Bot():
 				for m in mess:
 					con = m['context']
 					lis = con['listing']
+					id = m['vulnerability_id']
 					msg = MESSAGE_TEMPLATE % (con['type'], lis['codename'], con['vulnerability_title'], con['vulnerability_id'], m['subject'], m['preview'])
 
 					self.notification_send(msg)
+
+					# Mark all messages as read
+					if not self.api.markMessageRead(id):
+						log.warning(f"Marking the message {id} as read failed!")
+
 
 	def register_all_and_send(self):
 		newly_registered = self.api.registerAll()
